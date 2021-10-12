@@ -11,6 +11,7 @@ OUTPUT_DIR = args.out
 WIKI_DIR = args.wiki
 REPO = args.repo
 
+
 def extraHeaders(markdown):
     res = []
     lines = markdown.split('\n')
@@ -44,6 +45,8 @@ class MenuGenerator():
         self.Lines = lines
         self.Index = 0
         self.Menu = menu
+        self.Headers = dict()
+
     def gen(self, filename):
         while(self.Index < len(self.Lines)):
             res = self.generateMenu(3)
@@ -60,9 +63,14 @@ class MenuGenerator():
             menu.fill(line, 1, self.Menu)
         elif(line.startswith('#')):
             menu.fill(line, 2, self.Menu)
-        
+
         if menu.Level >= level:
             return None
+
+        if not self.Headers.get(menu.Name, False): self.Headers[menu.Name] = 1
+        if(self.Headers[menu.Name] > 1): menu.Link += f"-{self.Headers[menu.Name]-1}"
+        self.Headers[menu.Name] += 1
+
         running = True
         while(running and self.Index+1 < len(self.Lines)):
             self.Index+=1
@@ -92,7 +100,7 @@ class Menu():
         self.Level = 0
     def fill(self, line, level, top):
         self.Name = line[4-level:]
-        self.Link = top.Link + "#" + self.Name
+        self.Link = top.Link + "#" + self.Name.replace(" ", "-")
         self.Level = level
     
     def Print(self, indent):
