@@ -32,7 +32,7 @@ def main():
                 name = entry.name[:-3]
                 f = open(entry.path, 'r')
                 headers = extraHeaders(f.read())
-                menuGen = MenuGenerator(headers, name, "https://github.com/jonasKjellerup/LeHeadless/")
+                menuGen = MenuGenerator(headers, name, linkPrefix)
                 menuGen.gen(OUTPUT_DIR)
     print("Finished generating sidebar")
 
