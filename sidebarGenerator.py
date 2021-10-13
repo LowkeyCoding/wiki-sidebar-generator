@@ -5,12 +5,11 @@ from git.repo.base import Repo
 parser = argparse.ArgumentParser(description='Generate custom collapsible sidebar')
 parser.add_argument('--repo', action="store", dest="repo", required=True)
 parser.add_argument('--out', action="store", dest="out", default="_Sidebar.md")
-parser.add_argument('--wiki', action="store", dest="wiki", required=True)
+parser.add_argument('--wiki', action="store", dest="wiki", default="./wiki")
 args = parser.parse_args()
-OUTPUT_DIR = args.out
 WIKI_DIR = args.wiki
 REPO = args.repo
-
+OUTPUT_DIR = WIKI_DIR+"/"+args.out
 
 def extraHeaders(markdown):
     res = []
@@ -27,14 +26,15 @@ def main():
     if os.path.exists(OUTPUT_DIR):
         f = open(OUTPUT_DIR, 'w')
         f.close()
-    with os.scandir(WIKI_DIR) as it:
-        for entry in it:
-            if entry.name.endswith(".md") and not entry.name.startswith('_') and entry.is_file():
-                name = entry.name[:-3]
-                f = open(entry.path, 'r')
-                headers = extraHeaders(f.read())
-                menuGen = MenuGenerator(headers, name, linkPrefix)
-                menuGen.gen(OUTPUT_DIR)
+    dirs = os.listdir(WIKI_DIR)
+    dirs.sort()
+    for file in dirs:
+        if file.endswith(".md") and not file.startswith('_'):
+            name = file[:-3]
+            f = open(WIKI_DIR+"/"+file, 'r')
+            headers = extraHeaders(f.read())
+            menuGen = MenuGenerator(headers, name, linkPrefix)
+            menuGen.gen(OUTPUT_DIR)
     print("Finished generating sidebar")
 
 class MenuGenerator():
